@@ -1,0 +1,134 @@
+mvn -v查看maven版本
+    compile编译
+    test测试
+    package打包
+    clean删除
+    install安装jar包到本地仓库中
+
+
+
+创建目录的两种方式：
+1、 archetype:generate 依据提示进行创建
+2、 archetype:generate -DgroupId=组织名，公司网址反写+项目名;
+                        -DartifactId=项目名-模块名;
+                        -Dversion=版本号;
+
+
+maven中：
+构件:
+    坐标
+仓库
+    本地仓库
+    中央仓库
+镜像仓库
+    国内的镜像仓库
+    修改镜像仓库位置：setting.xml  mirror
+更改仓库位置 
+    setting.xml  localRepository
+
+pom.xml文件的解析：
+	<project>	: 根标签，表示约束
+	<modelVersion>	: 指定当前pom的版本
+
+	<groupId>	: 反写的公司网址+项目名
+	<artifactId>	: 项目名+模块名
+	<version>	: 0.0.0snapshot
+		第一个0	: 表示大版本号
+		第二个0 : 表示分支版本号
+		第三个0	: 表示小版本号
+
+		snapshop: 快照
+		alpha	: 内部测试
+		beta	: 公测
+		Release	: 稳定
+		GA	: 正式发布
+	<packaging>	: 压缩方式，默认为jar(jar zip pom)
+
+	<name>		: 项目描述名
+	<url>		: 项目地址
+	<description>	: 项目描述
+	<developers>	: 
+	<licenses>	: 许可信息
+	<organization>	:
+
+
+	<dependencies>	: 依赖信息
+		<dependency>
+			<groupId>	: 
+			<artifactId>	:
+			<version>	:
+
+			<type>		:
+			<scope>		:
+			<optional>	: 设置依赖是否可选
+
+			<exclusions>	: 排除依赖传递列表
+				<exclusion>
+	
+	<dependencyManage>: 依赖的管理
+		<dependencies>
+			<dependency>
+	<build>
+		<plugins>: 插件列表
+			<groupId>
+			<artifactId>
+			<version>
+	<parent>	: 用于子模块中对于父模块的继承
+	<modules>	: 指定多个模块，然后一起编译
+
+
+
+依赖范围<scope>  其中classpath有三种： 1.编译  2.测试  3.运行
+范围：1.compile： 默认，在编译测试运行时均有效；
+2.provided： 在编译，测试时有效；  servlet API加载
+3.runtime： 在测试，运行时有效；   jdbc驱动实现
+4.test： 只在测试时有效；  如junit
+5.system： 在编译，测试时有效，与本机系统想关联，换机子以后可能会出问题
+6.import：导入，只使用在<dependencyManagement>中，表示从其他的pom中导入<dependency> 的配置
+
+
+
+针对依赖冲突： 短路优先    声明优先
+1.短路优先：谁路径最短、最快，用谁的
+2.声明优先： 如果路径相同，谁先声明的， 用谁的
+
+
+
+
+继承：多次使用到的依赖，比如：单元测试，没有必要在所有的项目中都引用一下，此时就可以采用继承的方式来实现，先来一个父级的POM.XML然后再继承此POM.XML。
+1. packaging 改为pom。
+2. dependencyManagement 中并不提取依赖。
+3. property中定义了junit版本号，之后可以引用。
+4. 父类parent中的main和test没有意义，可以删除。
+
+父类pom：
+<dependencyManagement>
+   <dependencies>
+   <dependency>
+     <groupId>junit</groupId>
+     <artifactId>junit</artifactId>
+     <version>${junit.version}</version>
+   </dependency>
+ </dependencies>
+</dependencyManagement>
+
+子类pom：
+<parent>
+ <groupId>com.hongxin</groupId>
+ <artifactId>hongxin-parent</artifactId>
+ <version>0.0.1-SNAPSHOT</version>
+</parent>
+<dependencies>
+   <dependency>
+     <groupId>junit</groupId>
+     <artifactId>junit</artifactId>
+   </dependency>
+</dependencies>
+
+聚合：如果项目D依赖项目C，项目C依赖项目B，项目B依赖项目A，我们需要一个个安装这项项目，在Maven中有一种方式可以将多个项目一次性安装，这就是聚合的概念。简单讲就是，需要人工多次操作的，只要Maven能理解，一次性告诉他，他就能帮我们做这件单调烦人的事情了。——使用<modules></modules>这个标签。
+
+<modules>
+   <module>../hongxin-bege</module>
+   <module>../hongxin-nange</module>
+   <module>../hongxin-shanji</module>
+</modules>
